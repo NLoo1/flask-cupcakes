@@ -1,22 +1,22 @@
+import pdb
 from unittest import TestCase
+
+from flask import Flask
 
 from app.app import app
 from app.__init__ import create_app
 from app.models import db, Cupcake
 
-
 app = create_app()
 
 # Use test database and don't clutter tests with SQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://NLoo1: @localuser/cupcakes_test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://N: @localhost/cupcakes_test'
 app.config['SQLALCHEMY_ECHO'] = False
+
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
 
-with app.app_context():
-    db.drop_all()
-    db.create_all()
 
 
 CUPCAKE_DATA = {
@@ -40,6 +40,7 @@ class CupcakeViewsTestCase(TestCase):
     def setUp(self):
         """Make demo data."""
         self.app_context = app.app_context().push()
+        db.create_all()
         Cupcake.query.delete()
 
         cupcake = Cupcake(**CUPCAKE_DATA)
@@ -48,13 +49,15 @@ class CupcakeViewsTestCase(TestCase):
 
         self.cupcake = cupcake
 
-    # def tearDown(self):
-    #     """Clean up fouled transactions."""
+    def tearDown(self):
+        """Clean up fouled transactions."""
+        db.session.remove()
+        db.drop_all()
 
-    #     db.session.rollback()
 
     def test_list_cupcakes(self):
         with app.test_client() as client:
+            # pdb.set_trace()
             resp = client.get("/api/cupcakes")
 
             self.assertEqual(resp.status_code, 200)

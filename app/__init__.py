@@ -6,6 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from .models import db
+from .routes import rts
 
 debug = DebugToolbarExtension()
 
@@ -22,6 +23,7 @@ def create_app(config_class='config.Config'):
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     db.init_app(app)
+    app.register_blueprint(rts)
 
 
     return app
