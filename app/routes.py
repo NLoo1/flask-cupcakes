@@ -27,17 +27,20 @@ def add_cupcake():
     db.session.commit()
     return (jsonify(cupcake=new_cupcake.serialize()), 201)
 
-@rts.route('/api/todos/<cupcake_id>', methods=['PATCH'])
+@rts.route('/api/cupcakes/<cupcake_id>', methods=['PATCH'])
 def update_cupcake(cupcake_id):
-    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    cupcake = Cupcake.query.get_or_404(cupcake_id)  
+    print(request.json)
+    print(type(request.json))
     cupcake.flavor = request.json.get('flavor', cupcake.flavor)
     cupcake.size = request.json.get('size', cupcake.size)
     cupcake.rating = request.json.get('rating', cupcake.rating)
     cupcake.image = request.json.get('image', cupcake.image)
+    return jsonify(message=f"updated Cupcake {cupcake_id}")
 
-@rts.route('/api/todos/<cupcake_id>', methods=['DELETE'])
+@rts.route('/api/cupcakes/<cupcake_id>', methods=['DELETE'])
 def delete_cupcake(cupcake_id):
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     db.session.delete(cupcake)
     db.session.commit()
-    return jsonify(message="deleted")
+    return jsonify(message=f"deleted Cupcake {cupcake_id}")
