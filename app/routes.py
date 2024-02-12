@@ -1,8 +1,27 @@
 
 from flask import Blueprint, flash, redirect, render_template, request, jsonify
+
+from app.forms import AddCupcakeForm
 from .models import Cupcake, db
 
 rts = Blueprint('rts', __name__)
+
+@rts.route("/", methods=['POST', 'GET'])
+def home():
+
+    form = AddCupcakeForm()
+    if form.validate_on_submit():
+        flavor = form.flavor.data
+        size = form.size.data
+        rating = form.rating.data
+        image = form.image.data
+        new_cupcake = Cupcake(flavor=flavor,size=size,rating=rating,image=image)
+        db.session.add(new_cupcake)
+        db.session.commit()
+        flash('Cupcake added!')
+        return redirect('/')
+    else:
+        return render_template('home.html', form=form)
 
 @rts.route("/api/cupcakes")
 def get_cupcakes():
